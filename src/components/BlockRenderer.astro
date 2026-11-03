@@ -1,0 +1,121 @@
+---
+import type { PageBlock } from '../schemas';
+import { marked } from 'marked';
+import { withBase, rewriteHtmlSubpaths } from '../utils/basePath';
+
+interface Props {
+  blocks: PageBlock[];
+}
+
+const { blocks } = Astro.props;
+
+const renderedBlocks = await Promise.all(
+  blocks.map(async (block) => {
+    if (block.type === 'richtext') {
+      const rawHtml = await marked.parse(block.markdown);
+      const html = rewriteHtmlSubpaths(rawHtml);
+      return { ...block, html };
+    }
+    return block;
+  })
+);
+---
+
+<div class="space-y-16 py-8">
+  {renderedBlocks.map((block) => {
+    switch (block.type) {
+      case 'hero': {
+        const alignClass =
+          block.alignment === 'left'
+            ? 'text-left items-start'
+            : block.alignment === 'right'
+            ? 'text-right items-end'
+            : 'text-center items-center';
+
+        return (
+          <section
+            id={block.id}
+            class={`relative py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto flex flex-col ${alignClass}`}
+          >
+            {block.backgroundImage && (
+              <div
+                class="absolute inset-0 -z-10 bg-cover bg-center opacity-10 rounded-3xl"
+                style={`background-image: url('${withBase(block.backgroundImage)}');`}
+              />
+            )}
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white max-w-4xl leading-tight">
+              {block.heading}
+            </h1>
+            <p class="mt-6 text-lg sm:text-xl text-slate-300 max-w-3xl leading-relaxed">
+              {block.subheading}
+            </p>
+            {block.ctaText && block.ctaLink && (
+              <div class="mt-8 flex gap-4">
+                <a
+                  href={withBase(block.ctaLink)}
+                  class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-lg shadow-indigo-600/30 transition-all hover:scale-105"
+                >
+                  {block.ctaText}
+                </a>
+              </div>
+            )}
+          </section>
+        );
+      }
+
+      case 'features': {
+        return (
+          <section id={block.id} class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-center text-white mb-10">
+              {block.title}
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+              {block.items.map((item) => (
+                <div class="p-6 rounded-2xl bg-slate-800/60 border border-slate-700/60 hover:border-indigo-500/50 transition-all hover:-translate-y-1">
+                  <div class="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-mono font-bold text-sm mb-4 border border-indigo-500/20">
+                    {item.icon.slice(0, 2).toUpperCase()}
+                  </div>
+                  <h3 class="text-lg font-semibold text-white mb-2">{item.title}</h3>
+                  <p class="text-slate-400 text-sm leading-relaxed">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+      }
+
+      case 'richtext': {
+        return (
+          <section id={block.id} class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div
+              class="prose prose-invert max-w-none text-slate-300 space-y-4 [&>h2]:text-2xl [&>h2]:font-bold [&>h2]:text-white [&>h2]:mt-6 [&>ol]:list-decimal [&>ol]:pl-6 [&>ol>li]:mt-2 [&>p]:leading-relaxed"
+              set:html={block.html}
+            />
+          </section>
+        );
+      }
+
+      case 'cta': {
+        return (
+          <section id={block.id} class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-indigo-900/60 via-purple-900/40 to-slate-800 border border-indigo-500/30 text-center flex flex-col items-center">
+              <h2 class="text-2xl sm:text-3xl font-bold text-white mb-6 max-w-2xl">
+                {block.heading}
+              </h2>
+              <a
+                href={withBase(block.buttonUrl)}
+                class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-lg shadow-indigo-600/30 transition-all hover:scale-105"
+              >
+                {block.buttonText}
+              </a>
+            </div>
+          </section>
+        );
+      }
+
+      default:
+        return null;
+    }
+  })}
+</div>
+

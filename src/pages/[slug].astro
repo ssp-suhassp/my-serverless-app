@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BlockRenderer from '../components/BlockRenderer.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const pages = await getCollection('pages', ({ data }) => data.slug !== 'home');
+  return pages.map((page) => ({
+    params: { slug: page.data.slug },
+    props: { page },
+  }));
+}
+
+interface Props {
+  page: CollectionEntry<'pages'>;
+}
+
+const { page } = Astro.props;
+---
+
+<BaseLayout title={page.data.title} description={page.data.description}>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-2">
+      {page.data.title}
+    </h1>
+    <p class="text-slate-400 text-sm mb-8">Last updated: {page.data.updatedAt}</p>
+    <BlockRenderer blocks={page.data.blocks} />
+  </div>
+</BaseLayout>
+

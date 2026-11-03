@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BlockRenderer from '../components/BlockRenderer.astro';
+import { getEntry, getCollection } from 'astro:content';
+import { withBase } from '../utils/basePath';
+
+const homeEntry = await getEntry('pages', 'home');
+
+if (!homeEntry) {
+  throw new Error("Missing 'home.json' in src/content/pages/");
+}
+
+const recentPosts = await getCollection('posts', ({ data }) => {
+  return import.meta.env.PROD ? !data.draft : true;
+});
+
+recentPosts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+---
+
+<BaseLayout title={homeEntry.data.title} description={homeEntry.data.description}>
+  <BlockRenderer blocks={homeEntry.data.blocks} />
+
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-slate-800">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Recent Articles</h2>
+        <p class="text-slate-400 text-sm mt-1">Written locally, published to GitHub Pages</p>
+      </div>
+      <a
+        href={withBase('/blog')}
+        class="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
+      >
+        View All Articles &rarr;
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {recentPosts.map((post) => (
+        <article class="p-6 rounded-2xl bg-slate-800/40 border border-slate-700/60 hover:border-slate-600 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-3 text-xs text-slate-400 mb-3">
+              <time datetime={post.data.date}>{post.data.date}</time>
+              <span>•</span>
+              <span>{post.data.author}</span>
+              {post.data.draft && (
+                <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] font-semibold uppercase">
+                  Draft
+                </span>
+              )}
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2 hover:text-indigo-400 transition-colors">
+              <a href={withBase(`/blog/${post.slug}`)}>{post.data.title}</a>
+            </h3>
+            <p class="text-slate-400 text-sm leading-relaxed mb-4">{post.data.excerpt}</p>
+          </div>
+
+          <div class="flex items-center justify-between pt-4 border-t border-slate-700/40">
+            <div class="flex flex-wrap gap-2">
+              {post.data.tags.map((tag) => (
+                <span class="text-xs px-2 py-0.5 rounded bg-slate-700/60 text-slate-300">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+            <a
+              href={withBase(`/blog/${post.slug}`)}
+              class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 inline-flex items-center gap-1"
+            >
+              Read post &rarr;
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

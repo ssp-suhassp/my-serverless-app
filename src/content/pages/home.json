@@ -1,0 +1,52 @@
+{
+  "title": "Local-First Serverless CMS",
+  "slug": "home",
+  "description": "A Git-backed headless CMS and static site engine running on localhost with GitHub Pages delivery.",
+  "updatedAt": "2026-11-03T20:00:00.000Z",
+  "blocks": [
+    {
+      "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+      "type": "hero",
+      "heading": "Write Locally. Version in Git. Deliver Serverless.",
+      "subheading": "Author long-form posts and modular landing pages entirely on your machine. Publish to GitHub Pages as both a static website and a headless JSON API with zero cloud infrastructure costs.",
+      "ctaText": "Read the Articles",
+      "ctaLink": "/blog",
+      "alignment": "center"
+    },
+    {
+      "id": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+      "type": "features",
+      "title": "Architectural Pillars",
+      "items": [
+        {
+          "icon": "terminal",
+          "title": "Air-Gapped Local Authoring",
+          "description": "Your content stays on your machine. No cloud database lock-in, latency, or monthly hosting bills."
+        },
+        {
+          "icon": "git-branch",
+          "title": "Git as Source of Truth",
+          "description": "Every publish creates an immutable Git commit with automated conflict safety, staging, and audit history."
+        },
+        {
+          "icon": "globe",
+          "title": "Dual-Head Static Delivery",
+          "description": "Pre-renders accessible HTML pages and generates RESTful static JSON API endpoints for headless consumer apps."
+        }
+      ]
+    },
+    {
+      "id": "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f",
+      "type": "richtext",
+      "markdown": "## How It Works\n\n1. **Local Management Studio:** Run a lightweight React UI and Fastify daemon on `localhost`.\n2. **Type-Safe Validation:** Shared Zod schemas strictly validate frontmatter and page blocks prior to every commit.\n3. **Serverless CI/CD:** GitHub Actions executes static Astro builds and pre-generates the complete Headless API directory at `dist/api/`."
+    },
+    {
+      "id": "d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a",
+      "type": "cta",
+      "heading": "Ready to consume content headlessly?",
+      "buttonText": "Explore JSON API",
+      "buttonUrl": "/api/posts.json"
+    }
+  ]
+}
+
