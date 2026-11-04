@@ -13,24 +13,34 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
     name: Build Site & Static Headless API
     runs-on: ubuntu-latest
-    env:
-      SITE_URL: https://${{ github.repository_owner }}.github.io
-      BASE_PATH: ${{ github.event.repository.name == format('{0}.github.io', github.repository_owner) && '/' || format('/{0}/', github.event.repository.name) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Configure Deployment Environment
+        run: |
+          REPO_NAME="${GITHUB_REPOSITORY#*/}"
+          OWNER="${GITHUB_REPOSITORY_OWNER,,}"
+          SITE_URL="https://${OWNER}.github.io"
+          if [ "${REPO_NAME,,}" = "${OWNER}.github.io" ]; then
+            BASE_PATH="/"
+          else
+            BASE_PATH="/${REPO_NAME}/"
+          fi
+          echo "SITE_URL=${SITE_URL}" >> $GITHUB_ENV
+          echo "BASE_PATH=${BASE_PATH}" >> $GITHUB_ENV
+          echo "Configured SITE_URL=${SITE_URL} and BASE_PATH=${BASE_PATH}"
 
       - name: Setup Node.js runtime
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install dependencies
         run: npm install
@@ -54,4 +64,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
