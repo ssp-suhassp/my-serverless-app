@@ -96,3 +96,4 @@ export type CtaBlock = z.infer<typeof CtaBlockSchema>;
 export type PageBlock = z.infer<typeof PageBlockSchema>;
 export type PageData = z.infer<typeof PageSchema>;
 export type SiteConfig = z.infer<typeof SiteConfigSchema>;
+
