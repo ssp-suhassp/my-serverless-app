@@ -16,6 +16,6 @@ draft: false
 
 > Note: This post is a draft and will only appear in local development environments. It is omitted from production static builds and JSON API indices.
 
-## Overview
+## Overview Test
 
 When content authors upload raw PNG or TIFF files, Git repositories can rapidly exceed file size boundaries. By routing image uploads through a local daemon powered by `sharp`, images are automatically resized and transcoded into high-efficiency `.webp` formats.
